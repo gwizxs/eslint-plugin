@@ -7,16 +7,31 @@ const rule = require("../../../lib/rules/path-checker"),
   RuleTester = require("eslint").RuleTester;
 
 
-const ruleTester = new RuleTester();
+const ruleTester = new RuleTester({
+  languageOptions: {
+    ecmaVersion: 2020,
+    sourceType: "module"
+  }
+});
 ruleTester.run("path-checker", rule, {
   valid: [
-    // give me some code that won't trigger a warning
+    {
+      filename: "C:/inclu/src/entities/Article",
+      code: "import { addCommentFormReducer } from '../../model/slices/addCommentFormSlice'"
+    }
   ],
 
   invalid: [
     {
-      code: "asf",
-      errors: [{ messageId: "Fill me in.", type: "Me too" }],
+      filename: "C:/inclu/src/entities/Article",
+      code: "import { addCommentFormReducer } from 'entities/Article/model/slices/addCommentFormSlice'",
+      errors: [{ messageId: "shouldBeRelativeMess" }]
     },
-  ],
+    {
+      filename: "C:/inclu/src/entities/Article",
+      code: "import { addCommentFormReducer } from '@/entities/Article/model/slices/addCommentFormSlice'",
+      options: [{ alias: "@/" }],
+      errors: [{ messageId: "shouldBeRelativeMess" }]
+    }
+  ]
 });
